@@ -4,33 +4,38 @@
 #include "myvector.h"
 
 template <typename T>
-MyVector::MyVector(const MyVector& other) : _size(other._size), _capacity(other._size), data(nullptr) {
-  if (_capacity = 0) { return; }
+MyVector<T>::MyVector(const MyVector& other) : _size(other._size), _capacity(other._size), data(nullptr) {
+  if (_capacity == 0) { return; }
   data = new T[_capacity];
   try {
     for (size_t i = 0; i < _size; ++i) {
       data[i] = other.data[i];
-    } catch (...) { //if an exception occurs, just create an empty vector
-      delete[] data;
-      data = nullptr;
-      _size = _capacity = 0;
-      throw;
     }
   }
+     catch (...) { //if an exception occurs, just create an empty vector
+     delete[] data;
+     data = nullptr;
+     _size = _capacity = 0;
+     throw;
+    }
 } //copy constructor
 
 template <typename T>
-MyVector::MyVector(MyVector&& other); //move constructor
+MyVector<T>::MyVector(MyVector&& other) : _size(other._size), _capacity(other._capacity), data(other.data) {
+  other._size = 0;
+  other._capacity = 0;
+  other.data = nullptr;
+} //move constructor
 
 template <typename T>
-MyVector& MyVector::operator=(const MyVector& other); // copy assignment
+MyVector<T>& MyVector<T>::operator=(const MyVector& other); // copy assignment
 
 template <typename T>
-MyVector& MyVector::operator=(MyVector&& other); //move assignment
+MyVector<T>& MyVector<T>::operator=(MyVector&& other); //move assignment
 
 //element access
 template <typename T>
-T& MyVector::operator[](size_t index) {
+T& MyVector<T>::operator[](size_t index) {
   if (index >= _size) {
     throw std::out_of_range("Index out of range");
   }
@@ -38,7 +43,7 @@ T& MyVector::operator[](size_t index) {
 }
 
 template <typename T>
-const T& MyVector::operator[](size_t index) {
+const T& MyVector<T>::operator[](size_t index) {
   if (index >= _size) {
     throw std::out_of_range("Index out of range");
   }
@@ -46,30 +51,30 @@ const T& MyVector::operator[](size_t index) {
 }
 
 template <typename T>
-T& MyVector::at(size_t index);
+T& MyVector<T>::at(size_t index);
 
 template <typename T>
-const T& MyVector::at(size_t index) const;
+const T& MyVector<T>::at(size_t index) const;
 
 template <typename T>
-T& MyVector::front;
+T& MyVector<T>::front();
 
 template <typename T>
-T& MyVector::back;
+T& MyVector<T>::back();
 
 //capacity
 template <typename T>
-size_t MyVector::size() const { return _size; }
+size_t MyVector<T>::size() const { return _size; }
 
 template <typename T>
-size_t MyVector::capacity() const { return _capacity; }
+size_t MyVector<T>::capacity() const { return _capacity; }
 
 template <typename T>
-bool MyVector::empty() const { return _size == 0; }
+bool MyVector<T>::empty() const { return _size == 0; }
 
 //modifiers
 template <typename T>
-void MyVector::push_back(const T& value) {
+void MyVector<T>::push_back(const T& value) {
   if (_size == _capacity) {
     size_t new_capacity = (_capacity == 0) ? 1 : _capacity * 2; //doubles capacity, sets to 1 if 0.
     resize(new_capacity);
@@ -78,35 +83,35 @@ void MyVector::push_back(const T& value) {
 }
 
 template <typename T>
-void MyVector::push_back(T&& value);
+void MyVector<T>::push_back(T&& value);
 
 template <typename T>
-void MyVector::pop_back() {
+void MyVector<T>::pop_back() {
   if (_size > 0) {
     --_size; //no need to remove element. will be overwritten
   }
 }
 
 template <typename T>
-void MyVector::clear();
+void MyVector<T>::clear();
 
 template <typename T>
-void MyVector::reserve(size_t new_cap);
+void MyVector<T>::reserve(size_t new_cap);
 
 template <typename T>
-void MyVector::resize(size_t new_size, const T& value = T());
+void MyVector<T>::resize(size_t new_size, const T& value = T());
 
 //iterators
 template <typename T>
-T* MyVector::begin();
+T* MyVector<T>::begin();
 
 template <typename T>
-T* MyVector::end();
+T* MyVector<T>::end();
 
 template <typename T>
-const T* MyVector::begin() const;
+const T* MyVector<T>::begin() const;
 
 template <typename T>
-const T* MyVector::end() const;
+const T* MyVector<T>::end() const;
 
 #endif

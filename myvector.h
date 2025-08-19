@@ -43,8 +43,8 @@ public:
     const T& operator[](size_t index);
     T& at(size_t index);
     const T& at(size_t index) const;
-    T& front;
-    T& back;
+    T& front();
+    T& back();
 
     //capacity
     size_t size() const;
