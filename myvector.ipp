@@ -4,7 +4,7 @@
 #include "myvector.h"
 
 template <typename T>
-MyVector<T>::MyVector(const MyVector& other) : _size(other._size), _capacity(other._size), data(nullptr) {
+MyVector<T>::MyVector(const MyVector& other) : _size(other._size), _capacity(other._capacity), data(nullptr) {
   if (_capacity == 0) { return; }
   data = new T[_capacity];
   try {
@@ -47,7 +47,7 @@ T& MyVector<T>::operator[](size_t index) {
 }
 
 template <typename T>
-const T& MyVector<T>::operator[](size_t index) {
+const T& MyVector<T>::operator[](size_t index) const {
   if (index >= _size) {
     throw std::out_of_range("Index out of range");
   }
@@ -83,7 +83,7 @@ T& MyVector<T>::back() {
   if (_size <= 0) {
     throw std::out_of_range("Vector is empty");
   }
-  return data[_size];
+  return data[_size - 1];
 }
 
 //capacity
@@ -101,18 +101,18 @@ template <typename T>
 void MyVector<T>::push_back(const T& value) {
   if (_size == _capacity) {
     size_t new_capacity = (_capacity == 0) ? 1 : _capacity * 2; //doubles capacity, sets to 1 if 0.
-    resize(new_capacity);
+    reallocate(new_capacity);
   }
-  data[++_size] = value; //add value to vector
+  data[_size++] = value; //add value to vector
 }
 
 template <typename T>
 void MyVector<T>::push_back(T&& value) {
   if (_size == _capacity) {
     size_t new_capacity = (_capacity == 0) ? 1 : _capacity * 2;
-    resize(_capacity);
+    reallocate(new_capacity);
   }
-  data[++_size] = value;
+  data[_size++] = std::move(value);
 }
 
 template <typename T>
@@ -129,45 +129,60 @@ void MyVector<T>::clear() { // no need to change elements, since any access outs
 
 template <typename T>
 void MyVector<T>::reserve(size_t new_cap) {
-
+    if (new_cap > _capacity) {
+        reallocate(new_cap);
+    }
 }
+
 
 template <typename T>
-void MyVector<T>::resize(size_t new_size, const T& value = T()) {
-	if (new_size > _size) {
-          resize(new_size);
-          for (int i = _size + 1; i < _capacity; i++) {
-            data[i] = value;
-            _size++;
-          }
-	}
-    if (new_size < _size) {
-
-    }
+void MyVector<T>::resize(size_t new_size, const T& value) {
     if (new_size > _capacity) {
-
+        // Case 1: need more space
+        reallocate(new_size);
+        for (size_t i = _size; i < new_size; ++i) {
+            data[i] = value;
+        }
+        _size = new_size;
+    }
+    else if (new_size > _size) {
+        // Case 2: expand within capacity
+        for (size_t i = _size; i < new_size; ++i) {
+            data[i] = value;
+        }
+        _size = new_size;
+    }
+    else if (new_size < _size) {
+        // Case 3: shrink
+        _size = new_size;
     }
 }
+
+
 
 //iterators
 template <typename T>
 T* MyVector<T>::begin() {
-
+  if (empty()) { return nullptr; }
+  return data;
 }
 
 template <typename T>
 T* MyVector<T>::end() {
-
+  if (empty()) { return nullptr; }
+  return data + _size;
 }
 
 template <typename T>
 const T* MyVector<T>::begin() const {
-
+  if (empty()) { return nullptr; }
+  return data;
 }
 
 template <typename T>
 const T* MyVector<T>::end() const {
-
+  if (empty()) { return nullptr; }
+  return data + _size;
 }
 
 #endif

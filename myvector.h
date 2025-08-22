@@ -11,7 +11,7 @@ private:
     size_t _size;
     size_t _capacity;
 
-    void resize(size_t capacity) {
+    void reallocate(size_t capacity) {
       T* new_data = new T[new_capacity]; //dynamic array to be filled with old data
       for (size_t i = 0; i < _size; ++i) {
         new_data[i] = data[i];
